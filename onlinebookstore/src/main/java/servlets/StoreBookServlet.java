@@ -81,7 +81,7 @@ public class StoreBookServlet extends HttpServlet {
                 + "      <th scope=\"row\">" + book.getBarcode() + "</th>\r\n"
                 + "      <td>" + book.getName() + "</td>\r\n"
                 + "      <td>" + book.getAuthor() + "</td>\r\n"
-                + "      <td><span>&#8377;</span> " + book.getPrice() + "</td>\r\n"
+                + "      <td><span>RS;</span> " + book.getPrice() + "</td>\r\n"
                 + "      <td>"
                 + book.getQuantity()
                 + "      </td>\r\n"

@@ -64,7 +64,9 @@
 
       <!-- Resources plugin to copy Maven metadata for Eclipse WTP -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.0</version> <!-- Added version here -->
         <executions>
           <execution>
             <id>copy-maven-metadata</id>

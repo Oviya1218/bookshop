@@ -32,8 +32,10 @@ public class CheckoutServlet extends HttpServlet {
         }
 
         HttpSession session = req.getSession();
+        
+        // Retrieve the cart from the session
         Object obj = session.getAttribute("cartItems");
-
+        
         // Check if cartItems exists in the session
         if (obj == null) {
             pw.println("<h3>Your cart is empty or session expired. Please add items to cart first.</h3>");
@@ -45,6 +47,7 @@ public class CheckoutServlet extends HttpServlet {
             cartItems = (List<Cart>) obj;  // unchecked cast
         } catch (ClassCastException e) {
             pw.println("<h3>Error reading your cart. Please try again.</h3>");
+            e.printStackTrace();
             return;
         }
 
@@ -59,17 +62,33 @@ public class CheckoutServlet extends HttpServlet {
         Object amountObj = session.getAttribute("amountToPay");
         if (amountObj != null && amountObj instanceof Double) {
             amountToPay = (Double) amountObj;
+        } else {
+            pw.println("<h3>Amount to pay is missing from the session. Please try again.</h3>");
+            return;
         }
 
-        // Display the payment page
-        RequestDispatcher rd = req.getRequestDispatcher("payment.html");
-        rd.include(req, res);
-        StoreUtil.setActiveTab(pw, "cart");
+        // If amount is zero or invalid, reject the transaction
+        if (amountToPay <= 0) {
+            pw.println("<h3>Invalid amount to pay. Please try again.</h3>");
+            return;
+        }
 
-        // Display total amount and proceed button
-        pw.println("Total Amount<span class=\"price\" style=\"color: black\"><b>&#8377; " + amountToPay + "</b></span>");
-        pw.println("<input type=\"submit\" value=\"Pay & Place Order\" class=\"btn\">");
-        pw.println("</form></div></div></div></div>");
+        try {
+            // Display the payment page if all checks pass
+            RequestDispatcher rd = req.getRequestDispatcher("payment.html");
+            if (rd != null) {
+                rd.include(req, res);
+            } else {
+                pw.println("<h3>Payment page is not found. Please try again later.</h3>");
+            }
+
+            // Display total amount and proceed button
+            pw.println("<h3>Total Amount<span class=\"price\" style=\"color: black\"><b>RS; " + amountToPay + "</b></span></h3>");
+            pw.println("<form method=\"POST\" action=\"finalizePayment\"><input type=\"submit\" value=\"Pay & Place Order\" class=\"btn\"/></form>");
+            
+        } catch (Exception e) {
+            pw.println("<h3>Error rendering payment page. Please try again later.</h3>");
+            e.printStackTrace();
+        }
     }
 }
-

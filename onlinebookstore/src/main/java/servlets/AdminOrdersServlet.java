@@ -20,24 +20,30 @@ public class AdminOrdersServlet extends HttpServlet {
 
         out.println("<h2>All Orders</h2>");
         out.println("<table border='1' cellpadding='5' cellspacing='0'>");
-        out.println("<thead><tr><th>Order ID</th><th>Username</th><th>Total Amount (₹)</th><th>Order Date</th><th>Items</th></tr></thead>");
+        out.println("<thead><tr><th>Order ID</th><th>Email</th><th>Total Amount (RS)</th><th>Order Date</th><th>Items</th></tr></thead>");
         out.println("<tbody>");
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS)) {
-                String orderQuery = "SELECT * FROM orders ORDER BY order_date DESC";
+
+                
+                String orderQuery = "SELECT co.order_id, u.mailid AS email, co.total_amount, co.order_date " +
+                                    "FROM completed_orders co " +
+                                    "LEFT JOIN users u ON co.username = u.username " +
+                                    "ORDER BY co.order_date DESC";
+
                 try (PreparedStatement psOrders = conn.prepareStatement(orderQuery);
                      ResultSet rsOrders = psOrders.executeQuery()) {
 
                     while (rsOrders.next()) {
                         int orderId = rsOrders.getInt("order_id");
-                        String username = rsOrders.getString("username");
+                        String email = rsOrders.getString("email");
                         double total = rsOrders.getDouble("total_amount");
                         Timestamp date = rsOrders.getTimestamp("order_date");
 
-                        // Fetch order items
-                        String itemsQuery = "SELECT book_barcode, quantity, price_per_item FROM order_items WHERE order_id = ?";
+                        // Fetch order items for each order
+                        String itemsQuery = "SELECT book_barcode, quantity, price FROM completed_order_items WHERE order_id = ?";
                         StringBuilder itemsList = new StringBuilder("<ul>");
                         try (PreparedStatement psItems = conn.prepareStatement(itemsQuery)) {
                             psItems.setInt(1, orderId);
@@ -45,12 +51,12 @@ public class AdminOrdersServlet extends HttpServlet {
                                 while (rsItems.next()) {
                                     String barcode = rsItems.getString("book_barcode");
                                     int qty = rsItems.getInt("quantity");
-                                    double price = rsItems.getDouble("price_per_item");
-                                    itemsList.append("<li>")
+                                    double price = rsItems.getDouble("price");
+                                    itemsList.append("<li>Book Barcode: ")
                                             .append(barcode)
                                             .append(" - Qty: ")
                                             .append(qty)
-                                            .append(", Price: ₹")
+                                            .append(", Price: RS")
                                             .append(price)
                                             .append("</li>");
                                 }
@@ -58,8 +64,14 @@ public class AdminOrdersServlet extends HttpServlet {
                         }
                         itemsList.append("</ul>");
 
-                        out.printf("<tr><td>%d</td><td>%s</td><td>₹%.2f</td><td>%s</td><td>%s</td></tr>",
-                                orderId, username, total, date.toString(), itemsList.toString());
+                        out.printf(
+                            "<tr><td>%d</td><td>%s</td><td>₹%.2f</td><td>%s</td><td>%s</td></tr>",
+                            orderId,
+                            email != null ? email : "N/A",
+                            total,
+                            date.toString(),
+                            itemsList.toString()
+                        );
                     }
                 }
             }
@@ -71,3 +83,4 @@ public class AdminOrdersServlet extends HttpServlet {
         out.println("</tbody></table>");
     }
 }
+

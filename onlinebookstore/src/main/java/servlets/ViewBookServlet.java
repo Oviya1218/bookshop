@@ -132,7 +132,7 @@ public class ViewBookServlet extends HttpServlet {
                 + "                    </div>\r\n"
                 + "                    <div class=\"col-sm-6\">\r\n"
                 + "                        <p class=\"card-text\">\r\n"
-                + "                        Price: <span style=\"font-weight:bold; color:green\"> &#8377; "
+                + "                        Price: <span style=\"font-weight:bold; color:green\"> RS; "
                 + book.getPrice()
                 + " </span>\r\n"
                 + "                        </p>\r\n"

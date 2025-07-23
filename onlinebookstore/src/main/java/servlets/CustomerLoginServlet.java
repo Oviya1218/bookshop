@@ -23,13 +23,17 @@ public class CustomerLoginServlet extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter pw = res.getWriter();
         res.setContentType(BookStoreConstants.CONTENT_TYPE_TEXT_HTML);
+        
         String uName = req.getParameter(UsersDBConstants.COLUMN_USERNAME);
         String pWord = req.getParameter(UsersDBConstants.COLUMN_PASSWORD);
         User user = authService.login(UserRole.CUSTOMER, uName, pWord, req.getSession());
 
         try {
-
             if (user != null) {
+
+                // Set username and firstName in session for future use
+                req.getSession().setAttribute("username", uName);
+                req.getSession().setAttribute("firstName", user.getFirstName());
 
                 RequestDispatcher rd = req.getRequestDispatcher("CustomerHome.html");
                 rd.include(req, res);
@@ -37,7 +41,7 @@ public class CustomerLoginServlet extends HttpServlet {
                         + "    <br>\r\n"
                         + "    <table class=\"tab\">\r\n"
                         + "        <tr>\r\n"
-                        + "            <td><p>Welcome "+user.getFirstName()+", Happy Learning !!</p></td>\r\n"
+                        + "            <td><p>Welcome " + user.getFirstName() + ", Happy Learning !!</p></td>\r\n"
                         + "        </tr>\r\n"
                         + "    </table>");
 

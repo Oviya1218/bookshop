@@ -127,6 +127,36 @@
         <artifactId>itextpdf</artifactId>
         <version>5.5.13.4</version>
     </dependency>
+    
+<dependency>
+  <groupId>org.junit.jupiter</groupId>
+  <artifactId>junit-jupiter</artifactId>
+  <version>5.10.2</version>
+  <scope>test</scope>
+</dependency>
+
+<!-- Mockito core (compatible with JUnit 4) -->
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <version>3.12.4</version> <!-- Use 3.x version for JUnit 4 compatibility -->
+    <scope>test</scope>
+</dependency>
+
+<!-- Mockito JUnit 4 integration (for using @RunWith(MockitoJUnitRunner.class)) -->
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-junit-jupiter</artifactId>
+    <version>3.12.4</version> <!-- Ensure Mockito version matches here -->
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+  <groupId>org.seleniumhq.selenium</groupId>
+  <artifactId>selenium-java</artifactId>
+  <version>4.18.1</version>
+</dependency>
+
 
   </dependencies>
 </project>
